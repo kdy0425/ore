@@ -37,3 +37,6 @@
 ## 공개 문의
 
 - 이메일: `mungmung2sv@naver.com`
+- 개인정보처리방침: `https://oreno-ramen-staff.vercel.app/privacy`
+- 지원: `https://oreno-ramen-staff.vercel.app/support`
+- 계정 삭제 안내: `https://oreno-ramen-staff.vercel.app/account-deletion`

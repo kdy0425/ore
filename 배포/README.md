@@ -14,11 +14,20 @@
 - iOS 아이콘: 투명도 없는 1024×1024 PNG를 `assets/icon.png`에 연결
 - iPad 네이티브 지원: 초기 출시에서는 비활성화. iPhone UI로 출시 후 별도 QA를 거쳐 활성화 권장
 
+## 공개 배포 URL
+
+- 앱 안내: `https://oreno-ramen-staff.vercel.app/`
+- 지원: `https://oreno-ramen-staff.vercel.app/support`
+- 개인정보처리방침: `https://oreno-ramen-staff.vercel.app/privacy`
+- 계정 삭제 안내: `https://oreno-ramen-staff.vercel.app/account-deletion`
+
+Vercel 프로젝트명은 `oreno-ramen-staff`이며 위 주소들은 프로덕션으로 공개 배포되어 있다.
+
 ## 출시 전에 사람이 반드시 채워야 하는 항목
 
 1. Apple Developer Program과 Google Play Console 개발자 계정을 준비한다.
 2. 개인정보처리방침의 운영자명은 현재 `오레노라멘`으로 기재되어 있다. 실제 사업자·법인명이 다르면 출시 전에 정확한 법적 명칭으로 교체한다. 공개 문의 이메일은 `mungmung2sv@naver.com`으로 반영되어 있다.
-3. 두 HTML을 HTTPS 공개 주소에 배포하고 각 스토어에 URL을 입력한다.
+3. 위 HTTPS 공개 URL을 각 스토어 등록정보와 계정 삭제 항목에 입력한다.
 4. 일반 직원 권한의 심사용 계정을 별도로 만든다. dev/최고관리자 계정은 심사 계정으로 제공하지 않는다.
 5. 실기기에서 가입, 승인, 로그인, 학습, 시험, 비밀번호 찾기, 계정 삭제를 점검한다.
 6. Supabase Auth에 운영용 Custom SMTP를 연결한다. 기본 SMTP는 직원 전체에게 복구 메일을 안정적으로 보낼 수 없다.
@@ -51,7 +60,7 @@ Android 제출 설정은 안전하게 `internal` 트랙의 `draft` 상태로 두
 
 ## 권장 출시 순서
 
-1. 개인정보처리방침/계정삭제 페이지 공개
+1. 개인정보처리방침/지원/계정삭제 페이지 공개(완료)
 2. Supabase Custom SMTP 설정
 3. Android 내부 테스트 및 iOS TestFlight 테스트
 4. 스크린샷 촬영 및 문구 최종 확인

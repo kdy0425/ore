@@ -22,3 +22,6 @@
 ## 계정 삭제
 
 `내 정보 → 계정 영구 삭제`에서 계정과 연관 데이터를 삭제할 수 있다. 개인정보처리방침에는 보관 기간, 삭제 절차, 위탁 처리자를 명시해야 한다.
+
+- 개인정보처리방침: `https://oreno-ramen-staff.vercel.app/privacy`
+- 공개 계정 삭제 안내: `https://oreno-ramen-staff.vercel.app/account-deletion`

@@ -27,6 +27,7 @@ Supabase는 인증·DB·Storage 처리 위탁자다. Play Console의 “공유�
 ## 계정 삭제
 
 - 앱 안에서 삭제 가능
-- 공개 웹 삭제 요청 URL 필요
+- 공개 웹 삭제 안내: `https://oreno-ramen-staff.vercel.app/account-deletion`
+- 개인정보처리방침: `https://oreno-ramen-staff.vercel.app/privacy`
 - 계정 삭제 시 프로필, 학습/시험 기록, 작성 공지 및 연관 이미지 삭제
 - 레시피 버전처럼 다른 직원 운영에 필요한 비개인 데이터는 업로더 식별자만 제거하고 유지
