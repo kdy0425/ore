@@ -1,4 +1,4 @@
-# 오레노라멘 직원용 레시피 학습 앱
+# 오레노라멘 학습 (직원용)
 
 오레노라멘 직원이 레시피와 식자재 관리 내용을 반복 학습하고 시험으로 점검하는 모바일 앱입니다. React Native, Expo, TypeScript, Expo Router와 Supabase Auth/Postgres/Edge Functions로 구성되어 있습니다.
 

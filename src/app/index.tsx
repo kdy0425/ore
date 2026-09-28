@@ -70,7 +70,10 @@ export default function HomeScreen() {
         >
           <View style={styles.heroShade}>
             <Text style={styles.eyebrow}>ORENO RAMEN · STAFF TRAINING</Text>
-            <Text style={styles.heroTitle}>오레노라멘 학습</Text>
+            <View style={styles.titleRow}>
+              <Text style={styles.heroTitle}>오레노라멘 학습</Text>
+              <Text style={styles.staffTag}>(직원용)</Text>
+            </View>
             <Text style={styles.heroCopy}>짧게, 반복해서, 확실하게 익혀보세요.</Text>
           </View>
         </ImageBackground>
@@ -140,7 +143,10 @@ export default function HomeScreen() {
           >
             <View style={styles.introShade}>
               <Text style={styles.introEyebrow}>ORENO RAMEN</Text>
-              <Text style={styles.introTitle}>오레노라멘 학습</Text>
+              <View style={styles.titleRow}>
+                <Text style={styles.introTitle}>오레노라멘 학습</Text>
+                <Text style={styles.introStaffTag}>(직원용)</Text>
+              </View>
               <Text style={styles.introCopy}>맛의 기준을 익히는 시간</Text>
             </View>
           </ImageBackground>
@@ -176,7 +182,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.38)',
   },
   eyebrow: { color: '#F5C8C4', fontSize: 11, fontWeight: '900', letterSpacing: 1.2 },
-  heroTitle: { color: colors.white, fontSize: 30, fontWeight: '900', letterSpacing: -1, marginTop: 6 },
+  titleRow: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 8, marginTop: 6 },
+  heroTitle: { color: colors.white, fontSize: 30, fontWeight: '900', letterSpacing: -1 },
+  staffTag: { color: colors.white, backgroundColor: colors.brand, fontSize: 12, fontWeight: '900', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6, overflow: 'hidden' },
   heroCopy: { color: '#F5F5F5', fontSize: 14, marginTop: 5 },
   menuList: { gap: spacing.md },
   noticeSection: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: radii.lg, padding: spacing.md, gap: spacing.xs },
@@ -206,6 +214,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.36)',
   },
   introEyebrow: { color: '#F3AAA4', fontSize: 12, fontWeight: '900', letterSpacing: 2 },
-  introTitle: { color: colors.white, fontSize: 34, fontWeight: '900', letterSpacing: -1.2, marginTop: 8 },
+  introTitle: { color: colors.white, fontSize: 34, fontWeight: '900', letterSpacing: -1.2 },
+  introStaffTag: { color: colors.white, backgroundColor: colors.brand, fontSize: 13, fontWeight: '900', paddingHorizontal: 9, paddingVertical: 5, borderRadius: 6, overflow: 'hidden' },
   introCopy: { color: '#F1EFEC', fontSize: 15, fontWeight: '600', marginTop: 8 },
 });
