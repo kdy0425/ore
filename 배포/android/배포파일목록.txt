@@ -1,0 +1,67 @@
+오레노라멘 학습 (직원용) - Android 배포 파일 목록
+작성 기준일: 2026-09-28
+
+[스토어 출시 때 반드시 필요한 파일]
+
+1. 프로덕션 AAB 파일 (*.aab)
+- 용도: Google Play Console에 업로드하는 Android 앱 설치 번들
+- 필요 시점: Play Console의 테스트 또는 프로덕션 새 버전 만들기 단계
+- 생성 명령: npx eas-cli@latest build --platform android --profile production
+- 주의: 일반 사용자가 직접 설치하는 파일이 아니다. Play Console이 기기별 APK로 변환해 배포한다.
+
+2. store-icon-512.png
+- 용도: Google Play 스토어 앱 아이콘
+- 규격: 512 x 512 PNG
+- 필요 시점: Play Console의 기본 스토어 등록정보 작성 단계
+
+3. feature-graphic-1024x500.png
+- 용도: Google Play 스토어 상단 피처 그래픽
+- 규격: 1024 x 500 PNG
+- 필요 시점: Play Console의 기본 스토어 등록정보 작성 단계
+
+4. screenshots 폴더의 실제 앱 스크린샷
+- 용도: Play Store 상품 페이지에 표시할 앱 화면
+- 필요 시점: 기본 스토어 등록정보 제출 전
+- 현재 상태: README.md에 촬영 규격과 주의사항이 있으며 실제 기기 화면을 별도로 촬영해야 한다.
+
+5. store-listing.md
+- 용도: 앱 이름, 짧은 설명, 자세한 설명, 카테고리와 공개 연락처 입력 원고
+- 필요 시점: Play Console의 기본 스토어 등록정보 작성 단계
+- 주의: Markdown 파일 자체를 업로드하지 않고 내용을 복사해 입력한다.
+
+6. data-safety.md
+- 용도: 데이터 보안 설문 답변 초안
+- 필요 시점: Play Console > 앱 콘텐츠 > 데이터 보안 작성 단계
+- 주의: 파일을 업로드하지 않고 실제 운영 상태와 대조해 항목별로 입력한다.
+
+7. app-access.md
+- 용도: 로그인 제한 앱의 심사용 계정과 검토자 안내 문구 초안
+- 필요 시점: Play Console > 앱 콘텐츠 > 앱 액세스 작성 단계
+- 주의: 심사 계정 이메일과 비밀번호는 Git 파일에 쓰지 말고 Play Console에만 입력한다.
+
+8. release-notes-ko-KR.txt
+- 용도: 한국어 버전 업데이트 설명
+- 필요 시점: 새 출시 버전 생성 단계
+- 주의: TXT 내용을 해당 언어의 출시 노트 입력란에 붙여넣는다.
+
+[콘솔에 직접 입력할 공개 URL]
+
+- 개인정보처리방침: https://oreno-ramen-staff.vercel.app/privacy
+- 고객지원: https://oreno-ramen-staff.vercel.app/support
+- 계정 삭제 안내: https://oreno-ramen-staff.vercel.app/account-deletion
+
+[내부 테스트용 파일]
+
+9. 프리뷰 APK 파일 (*.apk)
+- 용도: Google Play를 거치지 않고 Android 기기에 직접 설치해 기능 확인
+- 생성 명령: npx eas-cli@latest build --platform android --profile preview
+- 필요 시점: 사내 QA 또는 심사 제출 전 실기기 점검
+- 주의: Play Store 정식 제출에는 APK가 아니라 프로덕션 AAB를 사용한다.
+
+[제출 순서 요약]
+
+1. 프로덕션 AAB 생성
+2. Play Console에서 앱 생성 및 앱 액세스/데이터 보안 설문 작성
+3. 아이콘, 피처 그래픽, 스크린샷과 등록 문구 입력
+4. 내부 테스트 트랙에 AAB 업로드
+5. 실제 기기 테스트 후 프로덕션으로 승격

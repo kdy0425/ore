@@ -1,0 +1,72 @@
+오레노라멘 학습 (직원용) - iOS 배포 파일 목록
+작성 기준일: 2026-09-28
+
+[스토어 출시 때 반드시 필요한 파일]
+
+1. 프로덕션 IPA 파일 (*.ipa)
+- 용도: App Store Connect/TestFlight에 업로드하는 iOS 앱 아카이브
+- 필요 시점: TestFlight 빌드 업로드 단계
+- 생성 명령: npx eas-cli@latest build --platform ios --profile production
+- 주의: 생성하려면 유료 Apple Developer Program 가입, 배포 인증서와 프로비저닝 프로파일이 필요하다.
+
+2. app-icon-1024.png
+- 용도: App Store Connect 앱 아이콘과 마케팅 아이콘 원본
+- 규격: 1024 x 1024 PNG, 투명도 없음
+- 필요 시점: 앱 레코드와 스토어 등록정보 준비 단계
+- 참고: 실제 빌드 아이콘은 프로젝트의 assets/icon.png에서 생성된다.
+
+3. screenshots 폴더의 실제 앱 스크린샷
+- 용도: App Store 상품 페이지에 표시할 iPhone 앱 화면
+- 필요 시점: 심사 제출 전 앱 버전 등록정보 작성 단계
+- 현재 상태: README.md에 촬영 규격과 주의사항이 있으며 실제 기기 화면을 별도로 촬영해야 한다.
+
+4. app-store-listing.md
+- 용도: 이름, 부제, 홍보 문구, 설명, 키워드, 카테고리와 URL 입력 원고
+- 필요 시점: App Store Connect의 앱 정보와 버전 정보 작성 단계
+- 주의: Markdown 파일 자체를 업로드하지 않고 내용을 복사해 입력한다.
+
+5. app-privacy.md
+- 용도: App Privacy 데이터 수집 설문 답변 초안
+- 필요 시점: App Store Connect > App Privacy 작성 단계
+- 주의: 파일을 업로드하지 않고 실제 운영 상태와 대조해 항목별로 입력한다.
+
+6. review-notes.md
+- 용도: App Review 담당자용 앱 설명, 심사용 계정, 주요 기능 경로 입력 원고
+- 필요 시점: 버전 심사 제출 전 App Review Information 작성 단계
+- 주의: 심사 계정 이메일과 비밀번호는 Git 파일에 쓰지 말고 App Store Connect에만 입력한다.
+
+7. release-notes-ko-KR.txt
+- 용도: 한국어 버전 업데이트 설명
+- 필요 시점: 새 버전의 새로운 기능 입력 단계
+
+[콘솔에 직접 입력할 공개 URL]
+
+- 개인정보처리방침: https://oreno-ramen-staff.vercel.app/privacy
+- 고객지원: https://oreno-ramen-staff.vercel.app/support
+- 계정 삭제 안내: https://oreno-ramen-staff.vercel.app/account-deletion
+
+[Apple 계정에서 별도로 준비할 항목]
+
+8. Apple Developer 배포 인증서
+- 용도: iOS 프로덕션 앱 서명
+- 필요 시점: 최초 EAS iOS 프로덕션 빌드 또는 인증서 갱신 시
+- 관리 위치: EAS Credentials 및 Apple Developer 계정
+
+9. App Store 프로비저닝 프로파일
+- 용도: Bundle ID com.orenoramen.learning과 배포 인증서를 연결
+- 필요 시점: iOS 프로덕션 빌드 시
+- 관리 위치: EAS Credentials 및 Apple Developer 계정
+
+10. App Store Connect 앱 레코드
+- 용도: 빌드, 스토어 정보, 심사 정보와 출시 상태 관리
+- 필요 시점: 최초 IPA 업로드 전
+- 앱 이름: 오레노라멘 학습 (직원용)
+- Bundle ID: com.orenoramen.learning
+
+[제출 순서 요약]
+
+1. Apple Developer Program 및 App Store Connect 앱 레코드 준비
+2. 프로덕션 IPA 생성 및 TestFlight 업로드
+3. TestFlight 실기기 테스트
+4. 아이콘, 스크린샷, 등록 문구, App Privacy와 심사 계정 입력
+5. 사용할 빌드를 선택하고 App Review 제출

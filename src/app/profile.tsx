@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Alert, StyleSheet, Text, View } from 'react-native';
 import { AppButton } from '@/components/AppButton';
+import { PolicyLinks } from '@/components/PolicyLinks';
 import { Screen } from '@/components/Screen';
 import { colors, radii, spacing } from '@/constants/theme';
 import { useAuth } from '@/providers/AuthProvider';
@@ -24,6 +25,9 @@ export default function ProfileScreen() {
         <View style={styles.row}><Text style={styles.label}>계정 상태</Text><Text style={styles.value}>{profile ? ACCOUNT_STATUS_LABELS[profile.status] : '-'}</Text></View>
       </View>
       <Text style={styles.help}>소속 지점이나 직원 레벨 변경은 관리자에게 문의해주세요.</Text>
+      <View style={styles.policySection}>
+        <PolicyLinks showHeading />
+      </View>
       <AppButton label="로그아웃" variant="danger" onPress={() => void signOut()} />
       <View style={styles.deleteSection}>
         <Text style={styles.deleteTitle}>계정 삭제</Text>
@@ -63,6 +67,7 @@ const styles = StyleSheet.create({
   label: { color: colors.inkMuted, fontSize: 13 },
   value: { color: colors.ink, fontSize: 14, fontWeight: '800', textAlign: 'right', flexShrink: 1 },
   help: { color: colors.inkMuted, fontSize: 12, textAlign: 'center' },
+  policySection: { borderTopWidth: 1, borderTopColor: colors.border, paddingTop: spacing.lg },
   deleteSection: { borderTopWidth: 1, borderTopColor: colors.border, marginTop: spacing.md, paddingTop: spacing.lg, gap: spacing.sm },
   deleteTitle: { color: colors.danger, fontSize: 16, fontWeight: '900', textAlign: 'center' },
 });

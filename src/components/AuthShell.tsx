@@ -1,6 +1,7 @@
 import type { PropsWithChildren } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import { Screen } from '@/components/Screen';
+import { PolicyLinks } from '@/components/PolicyLinks';
 import { colors, spacing } from '@/constants/theme';
 
 interface AuthShellProps extends PropsWithChildren {
@@ -21,6 +22,7 @@ export function AuthShell({ title, description, children }: AuthShellProps) {
         <Text style={styles.description}>{description}</Text>
       </View>
       <View style={styles.form}>{children}</View>
+      <PolicyLinks />
     </Screen>
   );
 }
