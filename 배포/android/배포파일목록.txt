@@ -7,6 +7,7 @@
 - 용도: Google Play Console에 업로드하는 Android 앱 설치 번들
 - 필요 시점: Play Console의 테스트 또는 프로덕션 새 버전 만들기 단계
 - 생성 명령: npx eas-cli@latest build --platform android --profile production
+- 현재 최종 빌드 페이지: https://expo.dev/accounts/kdy0415/projects/oreno-learning/builds/83a6cd81-cd4e-4038-a313-1b5f85a906d0
 - 주의: 일반 사용자가 직접 설치하는 파일이 아니다. Play Console이 기기별 APK로 변환해 배포한다.
 
 2. store-icon-512.png

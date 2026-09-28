@@ -7,6 +7,7 @@
 - 용도: App Store Connect/TestFlight에 업로드하는 iOS 앱 아카이브
 - 필요 시점: TestFlight 빌드 업로드 단계
 - 생성 명령: npx eas-cli@latest build --platform ios --profile production
+- 현재 상태: Apple Developer 배포 인증서와 Apple ID 인증이 필요해 아직 IPA가 생성되지 않았다.
 - 주의: 생성하려면 유료 Apple Developer Program 가입, 배포 인증서와 프로비저닝 프로파일이 필요하다.
 
 2. app-icon-1024.png
