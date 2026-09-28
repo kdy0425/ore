@@ -1,6 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { LearningRecords } from '@/types/records';
 import type { ExamResult, QuizQuestion } from '@/types/quiz';
+import {
+  syncExamResult,
+  syncLearningDuration,
+  syncStudyAttempt,
+  syncStudySession,
+} from '@/services/cloudLearning';
 
 const STORAGE_KEY = '@oreno/learning-records/v1';
 const MAX_EXAM_HISTORY = 20;
@@ -68,12 +74,14 @@ function mutateRecords(mutator: (records: LearningRecords) => void): Promise<Lea
   return operation;
 }
 
-export function beginStudySession(): Promise<LearningRecords> {
-  return mutateRecords((records) => {
-    const now = new Date().toISOString();
-    records.totals.studySessions += 1;
-    records.totals.lastStudiedAt = now;
+export async function beginStudySession(): Promise<LearningRecords> {
+  const now = new Date().toISOString();
+  const records = await mutateRecords((current) => {
+    current.totals.studySessions += 1;
+    current.totals.lastStudiedAt = now;
   });
+  void syncStudySession(now).catch((error) => console.warn('Supabase study session sync failed', error));
+  return records;
 }
 
 function toLocalDateKey(date: Date): string {
@@ -83,32 +91,35 @@ function toLocalDateKey(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
-export function recordLearningDuration(seconds: number, recordedAt = new Date()): Promise<LearningRecords> {
+export async function recordLearningDuration(seconds: number, recordedAt = new Date()): Promise<LearningRecords> {
   const wholeSeconds = Math.floor(seconds);
   if (wholeSeconds <= 0) return loadLearningRecords();
 
-  return mutateRecords((records) => {
+  const records = await mutateRecords((current) => {
     const dateKey = toLocalDateKey(recordedAt);
-    records.dailyActivity[dateKey] = (records.dailyActivity[dateKey] ?? 0) + wholeSeconds;
-    records.totals.lastStudiedAt = recordedAt.toISOString();
+    current.dailyActivity[dateKey] = (current.dailyActivity[dateKey] ?? 0) + wholeSeconds;
+    current.totals.lastStudiedAt = recordedAt.toISOString();
   });
+  void syncLearningDuration(wholeSeconds, recordedAt.toISOString())
+    .catch((error) => console.warn('Supabase learning duration sync failed', error));
+  return records;
 }
 
-export function recordStudyAttempt(
+export async function recordStudyAttempt(
   question: QuizQuestion,
   isCorrect: boolean,
   firstAttemptForQuestion: boolean,
 ): Promise<LearningRecords> {
-  return mutateRecords((records) => {
-    const now = new Date().toISOString();
-    const questionRecord = records.questions[question.id] ?? {
+  const now = new Date().toISOString();
+  const records = await mutateRecords((current) => {
+    const questionRecord = current.questions[question.id] ?? {
       questionId: question.id,
       correctCount: 0,
       wrongCount: 0,
       studyCount: 0,
       lastStudiedAt: now,
     };
-    const categoryRecord = records.categories[question.categoryId] ?? {
+    const categoryRecord = current.categories[question.categoryId] ?? {
       categoryId: question.categoryId,
       correctCount: 0,
       wrongCount: 0,
@@ -116,11 +127,11 @@ export function recordStudyAttempt(
     };
 
     if (isCorrect) {
-      records.totals.correctCount += 1;
+      current.totals.correctCount += 1;
       questionRecord.correctCount += 1;
       categoryRecord.correctCount += 1;
     } else {
-      records.totals.wrongCount += 1;
+      current.totals.wrongCount += 1;
       questionRecord.wrongCount += 1;
       categoryRecord.wrongCount += 1;
     }
@@ -128,32 +139,35 @@ export function recordStudyAttempt(
     if (firstAttemptForQuestion) questionRecord.studyCount += 1;
     questionRecord.lastStudiedAt = now;
     categoryRecord.lastStudiedAt = now;
-    records.totals.lastStudiedAt = now;
-    records.questions[question.id] = questionRecord;
-    records.categories[question.categoryId] = categoryRecord;
+    current.totals.lastStudiedAt = now;
+    current.questions[question.id] = questionRecord;
+    current.categories[question.categoryId] = categoryRecord;
   });
+  void syncStudyAttempt(question, isCorrect, firstAttemptForQuestion, now)
+    .catch((error) => console.warn('Supabase study attempt sync failed', error));
+  return records;
 }
 
-export function saveExamResult(result: ExamResult, questions: QuizQuestion[]): Promise<LearningRecords> {
-  return mutateRecords((records) => {
+export async function saveExamResult(result: ExamResult, questions: QuizQuestion[]): Promise<LearningRecords> {
+  const records = await mutateRecords((current) => {
     const now = result.completedAt;
-    records.totals.examSessions += 1;
-    records.totals.correctCount += result.correct;
-    records.totals.wrongCount += result.wrong;
-    records.totals.lastStudiedAt = now;
+    current.totals.examSessions += 1;
+    current.totals.correctCount += result.correct;
+    current.totals.wrongCount += result.wrong;
+    current.totals.lastStudiedAt = now;
 
     const questionMap = new Map(questions.map((question) => [question.id, question]));
     result.answers.forEach((answer) => {
       const question = questionMap.get(answer.questionId);
       if (!question) return;
-      const questionRecord = records.questions[question.id] ?? {
+      const questionRecord = current.questions[question.id] ?? {
         questionId: question.id,
         correctCount: 0,
         wrongCount: 0,
         studyCount: 0,
         lastStudiedAt: now,
       };
-      const categoryRecord = records.categories[question.categoryId] ?? {
+      const categoryRecord = current.categories[question.categoryId] ?? {
         categoryId: question.categoryId,
         correctCount: 0,
         wrongCount: 0,
@@ -169,15 +183,17 @@ export function saveExamResult(result: ExamResult, questions: QuizQuestion[]): P
       }
       questionRecord.lastStudiedAt = now;
       categoryRecord.lastStudiedAt = now;
-      records.questions[question.id] = questionRecord;
-      records.categories[question.categoryId] = categoryRecord;
+      current.questions[question.id] = questionRecord;
+      current.categories[question.categoryId] = categoryRecord;
     });
 
-    records.examHistory = [result, ...records.examHistory.filter((item) => item.id !== result.id)].slice(
+    current.examHistory = [result, ...current.examHistory.filter((item) => item.id !== result.id)].slice(
       0,
       MAX_EXAM_HISTORY,
     );
   });
+  void syncExamResult(result, questions).catch((error) => console.warn('Supabase exam sync failed', error));
+  return records;
 }
 
 export async function clearLearningRecords(): Promise<void> {

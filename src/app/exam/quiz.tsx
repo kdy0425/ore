@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -24,6 +24,7 @@ export default function ExamQuizScreen() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [submitting, setSubmitting] = useState(false);
+  const startedAt = useRef(new Date().toISOString());
   useLearningTimer(questions.length > 0);
   const question = questions[currentIndex];
   const selectedAnswer = question ? answers[question.id] : undefined;
@@ -52,7 +53,7 @@ export default function ExamQuizScreen() {
 
     setSubmitting(true);
     try {
-      const result = createExamResult(questions, answers, mode);
+      const result = createExamResult(questions, answers, mode, startedAt.current);
       await saveExamResult(result, questions);
       router.replace({ pathname: '/exam/result', params: { resultId: result.id } });
     } finally {

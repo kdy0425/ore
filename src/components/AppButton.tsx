@@ -1,7 +1,7 @@
 import type { ComponentProps } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, radii, spacing } from '@/constants/theme';
+import { colors, spacing } from '@/constants/theme';
 
 interface AppButtonProps {
   label: string;
@@ -57,7 +57,7 @@ export function AppButton({
 const styles = StyleSheet.create({
   base: {
     minHeight: 54,
-    borderRadius: radii.md,
+    borderRadius: 8,
     paddingHorizontal: spacing.lg,
     alignItems: 'center',
     justifyContent: 'center',

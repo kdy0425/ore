@@ -63,6 +63,7 @@ export default function RecordsScreen() {
   return (
     <Screen contentContainerStyle={styles.content}>
       <SectionTitle title="학습 리포트" caption={`마지막 학습 ${formatDate(totals.lastStudiedAt)}`} />
+      <Text style={styles.recordScope}>전체 정답률과 카테고리 기록은 이 계정에서 저장된 누적 기록이며, 주간 학습은 아래에 표시된 월~일 기간만 반영합니다.</Text>
 
       <View style={styles.weekCard}>
         <View style={styles.weekNav}>
@@ -198,6 +199,7 @@ export default function RecordsScreen() {
 const styles = StyleSheet.create({
   content: { gap: spacing.lg, paddingBottom: spacing.xxl },
   loading: { color: colors.inkMuted },
+  recordScope: { color: colors.inkMuted, backgroundColor: colors.surfaceMuted, borderRadius: radii.md, padding: spacing.sm, fontSize: 11, lineHeight: 17 },
   summaryCard: { backgroundColor: colors.ink, borderRadius: radii.lg, padding: spacing.lg, alignItems: 'center', gap: spacing.xs },
   summaryLabel: { color: '#C8C3BD', fontSize: 13, fontWeight: '700' },
   summaryValue: { color: colors.white, fontSize: 48, fontWeight: '900', letterSpacing: -1.5 },

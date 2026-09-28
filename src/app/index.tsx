@@ -1,15 +1,20 @@
 import { useEffect, useState } from 'react';
-import { Animated, Easing, Image, ImageBackground, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Animated, Easing, Image, ImageBackground, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MenuCard } from '@/components/MenuCard';
 import { colors, radii, spacing } from '@/constants/theme';
+import { useAuth } from '@/providers/AuthProvider';
+import { canAccessAdmin } from '@/lib/permissions';
+import { loadNotices, type NoticeWithRelations } from '@/services/notices';
 
 export default function HomeScreen() {
   const [showIntro, setShowIntro] = useState(true);
   const [introImageLoaded, setIntroImageLoaded] = useState(false);
   const [introOpacity] = useState(() => new Animated.Value(1));
+  const [recentNotices, setRecentNotices] = useState<NoticeWithRelations[]>([]);
+  const { profile } = useAuth();
 
   useEffect(() => {
     if (!introImageLoaded) return undefined;
@@ -33,6 +38,10 @@ export default function HomeScreen() {
     };
   }, [introImageLoaded, introOpacity]);
 
+  useEffect(() => {
+    void loadNotices(3).then(setRecentNotices).catch(() => undefined);
+  }, []);
+
   return (
     <View style={styles.page}>
       <StatusBar style={showIntro ? 'light' : 'dark'} />
@@ -45,6 +54,15 @@ export default function HomeScreen() {
         />
       </SafeAreaView>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        <View style={styles.welcome}>
+          <View>
+            <Text style={styles.welcomeName}>{profile?.name}님, 안녕하세요.</Text>
+            <Text style={styles.welcomeBranch}>{profile?.branch?.name ?? '오레노라멘'}</Text>
+          </View>
+          <Pressable onPress={() => router.push('/profile')} style={styles.profileButton}>
+            <Text style={styles.profileButtonText}>내 정보</Text>
+          </Pressable>
+        </View>
         <ImageBackground
           source={require('../../assets/images/ramen-hero.jpg')}
           imageStyle={styles.heroImage}
@@ -56,6 +74,20 @@ export default function HomeScreen() {
             <Text style={styles.heroCopy}>짧게, 반복해서, 확실하게 익혀보세요.</Text>
           </View>
         </ImageBackground>
+
+        <View style={styles.noticeSection}>
+          <View style={styles.noticeHeading}>
+            <Text style={styles.noticeTitle}>최근 공지</Text>
+            <Pressable onPress={() => router.push('/notices')}><Text style={styles.noticeMore}>전체보기</Text></Pressable>
+          </View>
+          {recentNotices.length === 0 ? <Text style={styles.noticeEmpty}>등록된 공지사항이 없습니다.</Text> : recentNotices.map((notice) => (
+            <Pressable key={notice.id} onPress={() => router.push({ pathname: '/notices/[id]', params: { id: notice.id } })} style={styles.noticeRow}>
+              <Text style={styles.noticeScope}>{notice.scope === 'global' ? '전체' : notice.branch?.name ?? '지점'}</Text>
+              <Text style={styles.noticeRowTitle} numberOfLines={1}>{notice.title}</Text>
+              {notice.notice_reads.length === 0 ? <View style={styles.unreadDot} /> : null}
+            </Pressable>
+          ))}
+        </View>
 
         <View style={styles.menuList}>
           <MenuCard
@@ -78,6 +110,22 @@ export default function HomeScreen() {
             accent={colors.success}
             onPress={() => router.push('/records')}
           />
+          <MenuCard
+            title="공지사항"
+            description="전체공지와 소속 지점의 안내를 확인해요."
+            icon="megaphone-outline"
+            accent="#8B4AA8"
+            onPress={() => router.push('/notices')}
+          />
+          {canAccessAdmin(profile) ? (
+            <MenuCard
+              title="관리"
+              description="승인 대기, 직원 및 지점 통계를 관리해요."
+              icon="settings-outline"
+              accent="#B06C08"
+              onPress={() => router.push('/admin')}
+            />
+          ) : null}
         </View>
         <Text style={styles.footer}>오늘도 맛의 기준을 함께 지켜요.</Text>
       </ScrollView>
@@ -114,6 +162,11 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xxl,
     gap: spacing.lg,
   },
+  welcome: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  welcomeName: { color: colors.ink, fontSize: 18, fontWeight: '900' },
+  welcomeBranch: { color: colors.inkMuted, fontSize: 12, marginTop: 3 },
+  profileButton: { backgroundColor: colors.surfaceMuted, borderRadius: radii.pill, paddingHorizontal: 13, paddingVertical: 8 },
+  profileButtonText: { color: colors.ink, fontSize: 12, fontWeight: '800' },
   hero: { height: 214, justifyContent: 'flex-end' },
   heroImage: { borderRadius: radii.lg },
   heroShade: {
@@ -126,6 +179,15 @@ const styles = StyleSheet.create({
   heroTitle: { color: colors.white, fontSize: 30, fontWeight: '900', letterSpacing: -1, marginTop: 6 },
   heroCopy: { color: '#F5F5F5', fontSize: 14, marginTop: 5 },
   menuList: { gap: spacing.md },
+  noticeSection: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: radii.lg, padding: spacing.md, gap: spacing.xs },
+  noticeHeading: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.xs },
+  noticeTitle: { color: colors.ink, fontSize: 17, fontWeight: '900' },
+  noticeMore: { color: colors.brand, fontSize: 12, fontWeight: '800' },
+  noticeEmpty: { color: colors.inkMuted, fontSize: 13, paddingVertical: spacing.sm },
+  noticeRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingVertical: spacing.sm, borderTopWidth: 1, borderTopColor: colors.border },
+  noticeScope: { color: colors.brand, fontSize: 10, fontWeight: '900', width: 54 },
+  noticeRowTitle: { flex: 1, color: colors.ink, fontSize: 13, fontWeight: '700' },
+  unreadDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.brand },
   footer: { textAlign: 'center', color: colors.inkMuted, fontSize: 13, marginTop: spacing.sm },
   intro: {
     position: 'absolute',

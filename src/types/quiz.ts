@@ -52,6 +52,7 @@ export interface ExamCategoryResult {
 
 export interface ExamResult {
   id: string;
+  startedAt?: string;
   completedAt: string;
   mode: ExamMode;
   answers: ExamAnswer[];

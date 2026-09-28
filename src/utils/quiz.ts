@@ -22,6 +22,7 @@ export function createExamResult(
   questions: QuizQuestion[],
   selectedAnswers: Record<string, number>,
   mode: 'all' | 'category' | 'wrong',
+  startedAt = new Date().toISOString(),
 ) {
   const answers: ExamAnswer[] = questions.map((question) => ({
     questionId: question.id,
@@ -44,6 +45,7 @@ export function createExamResult(
 
   return {
     id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    startedAt,
     completedAt: new Date().toISOString(),
     mode,
     answers,
