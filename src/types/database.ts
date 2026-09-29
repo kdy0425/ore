@@ -713,6 +713,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      register_push_token: {
+        Args: { device_platform: string; push_token: string }
+        Returns: undefined
+      }
       reject_user: {
         Args: { target_user_id: string }
         Returns: {
@@ -739,6 +743,10 @@ export type Database = {
       replace_recipe_bundle: {
         Args: { bundle: Json }
         Returns: Database["public"]["Tables"]["recipe_bundles"]["Row"]
+      }
+      unregister_push_token: {
+        Args: { push_token: string }
+        Returns: undefined
       }
       update_branch: {
         Args: {

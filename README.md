@@ -174,6 +174,17 @@ DB 비밀번호, secret key, `service_role` 키는 앱 환경변수에 넣지 �
 
 원격 DB 변경은 `supabase/migrations/`의 순서대로 적용합니다. 현재 마이그레이션은 지점·프로필·승인 RPC·학습/시험 기록·공지·비공개 Storage 정책을 구성합니다.
 
+### 푸시 알림
+
+사용자는 첫 로그인 후 안내에서 동의하거나 **설정 → 알림 받기**에서 알림을 켤 수 있습니다. 새 공지는 대상 직원에게, 가입 심사 결과와 직원 등급 변경은 해당 직원에게 전송됩니다. 소속 지점에 새 가입 신청이 들어오면 해당 지점의 지점장에게 전송됩니다.
+
+1. `supabase db push`로 `push_notifications` 마이그레이션을 원격 DB에 적용합니다. 이 마이그레이션은 `pg_net`을 사용해 트랜잭션 커밋 후 Expo Push Service에 비동기로 전달합니다.
+2. Android는 Firebase 프로젝트의 `google-services.json`을 안전한 로컬/EAS 환경에 준비하고 FCM V1 서비스 계정 키를 EAS Credentials에 등록합니다. 파일과 키는 Git에 커밋하지 않습니다.
+3. iOS는 Apple Developer 계정의 APNs 키를 EAS Credentials에 등록합니다.
+4. 푸시는 Expo Go가 아니라 실제 기기에 설치한 development/preview/production 빌드에서 검사합니다.
+
+권한은 앱 실행 즉시 강제로 요청하지 않습니다. 첫 로그인 후 용도를 설명하고 사용자가 **알림 받기**를 선택했을 때만 Android/iOS 시스템 권한창을 표시합니다. 거절해도 핵심 기능을 사용할 수 있고 설정에서 다시 시도할 수 있습니다.
+
 ### Auth 대시보드 설정
 
 Supabase Dashboard의 **Authentication → URL Configuration**에서 사용하는 환경에 맞춰 다음 redirect URL을 허용합니다.
@@ -208,7 +219,7 @@ Supabase 세션은 웹의 로컬 저장소 또는 모바일의 AsyncStorage에 �
 
 ### 계정 삭제
 
-스토어 정책에 맞춰 사용자는 **내 정보 → 계정 영구 삭제**에서 자신의 Auth 계정, 프로필, 학습·시험 기록, 작성 공지와 연관 이미지를 삭제할 수 있습니다. 삭제는 JWT를 검증하는 [`delete-account`](supabase/functions/delete-account/index.ts) Edge Function에서 수행하며 `service_role` 키는 앱에 노출하지 않습니다.
+스토어 정책에 맞춰 사용자는 **설정 → 계정 영구 삭제**에서 자신의 Auth 계정, 프로필, 학습·시험 기록, 작성 공지와 연관 이미지를 삭제할 수 있습니다. 삭제는 JWT를 검증하는 [`delete-account`](supabase/functions/delete-account/index.ts) Edge Function에서 수행하며 `service_role` 키는 앱에 노출하지 않습니다.
 
 ### 비밀번호 재설정 메일 운영 설정
 

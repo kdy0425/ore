@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import * as Application from 'expo-application';
 import { Alert, StyleSheet, Text, View } from 'react-native';
 import { AppButton } from '@/components/AppButton';
 import { PolicyLinks } from '@/components/PolicyLinks';
@@ -8,10 +9,13 @@ import { useAuth } from '@/providers/AuthProvider';
 import { ACCOUNT_STATUS_LABELS, EMPLOYEE_LEVEL_LABELS } from '@/types/auth';
 import { deleteCurrentAccount } from '@/services/account';
 import { toUserMessage } from '@/lib/errors';
+import { PushNotificationSetting } from '@/components/PushNotificationSetting';
 
 export default function ProfileScreen() {
   const { profile, signOut } = useAuth();
   const [deleting, setDeleting] = useState(false);
+  const version = Application.nativeApplicationVersion ?? '1.0.0';
+  const buildVersion = Application.nativeBuildVersion;
 
   return (
     <Screen contentContainerStyle={styles.content}>
@@ -25,6 +29,13 @@ export default function ProfileScreen() {
         <View style={styles.row}><Text style={styles.label}>계정 상태</Text><Text style={styles.value}>{profile ? ACCOUNT_STATUS_LABELS[profile.status] : '-'}</Text></View>
       </View>
       <Text style={styles.help}>소속 지점이나 직원 레벨 변경은 관리자에게 문의해주세요.</Text>
+      <PushNotificationSetting />
+      <View style={styles.sectionCard}>
+        <View style={styles.row}>
+          <Text style={styles.label}>앱 버전</Text>
+          <Text style={styles.value}>{version}{buildVersion ? ` (${buildVersion})` : ''}</Text>
+        </View>
+      </View>
       <View style={styles.policySection}>
         <PolicyLinks showHeading />
       </View>
@@ -67,6 +78,7 @@ const styles = StyleSheet.create({
   label: { color: colors.inkMuted, fontSize: 13 },
   value: { color: colors.ink, fontSize: 14, fontWeight: '800', textAlign: 'right', flexShrink: 1 },
   help: { color: colors.inkMuted, fontSize: 12, textAlign: 'center' },
+  sectionCard: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: radii.lg, padding: spacing.lg },
   policySection: { borderTopWidth: 1, borderTopColor: colors.border, paddingTop: spacing.lg },
   deleteSection: { borderTopWidth: 1, borderTopColor: colors.border, marginTop: spacing.md, paddingTop: spacing.lg, gap: spacing.sm },
   deleteTitle: { color: colors.danger, fontSize: 16, fontWeight: '900', textAlign: 'center' },

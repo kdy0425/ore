@@ -3,6 +3,7 @@ import { AuthShell } from '@/components/AuthShell';
 import { AppButton } from '@/components/AppButton';
 import { colors, radii, spacing } from '@/constants/theme';
 import { useAuth } from '@/providers/AuthProvider';
+import { PushNotificationSetting } from '@/components/PushNotificationSetting';
 
 const copy = {
   pending: ['현재 가입 승인 대기 중입니다.', '관리자가 소속 지점과 직원 레벨을 확인한 뒤 승인합니다.'],
@@ -24,6 +25,9 @@ export default function AccountStatusScreen() {
         <View style={styles.row}><Text style={styles.label}>상태</Text><Text style={styles.status}>{title}</Text></View>
       </View>
       {profileError ? <Text style={styles.error}>{profileError}</Text> : null}
+      {status === 'pending' ? (
+        <PushNotificationSetting description="가입 심사가 끝나면 이 기기로 결과를 알려드립니다." />
+      ) : null}
       <AppButton label="승인 상태 새로고침" variant="secondary" onPress={() => void refreshProfile()} />
       <AppButton label="로그아웃" variant="ghost" onPress={() => void signOut()} />
     </AuthShell>

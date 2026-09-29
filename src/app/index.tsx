@@ -60,7 +60,7 @@ export default function HomeScreen() {
             <Text style={styles.welcomeBranch}>{profile?.branch?.name ?? '오레노라멘'}</Text>
           </View>
           <Pressable onPress={() => router.push('/profile')} style={styles.profileButton}>
-            <Text style={styles.profileButtonText}>내 정보</Text>
+            <Text style={styles.profileButtonText}>설정</Text>
           </Pressable>
         </View>
         <ImageBackground

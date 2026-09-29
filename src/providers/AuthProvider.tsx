@@ -5,6 +5,7 @@ import * as Linking from 'expo-linking';
 import { supabase } from '@/lib/supabase';
 import type { ProfileWithBranches } from '@/types/auth';
 import { refreshQuizBank } from '@/data/quizRepository';
+import { unregisterPushTokenForCurrentDevice } from '@/services/pushNotifications';
 
 interface AuthContextValue {
   loading: boolean;
@@ -113,6 +114,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     profileError,
     refreshProfile,
     signOut: async () => {
+      await unregisterPushTokenForCurrentDevice().catch(() => undefined);
       await supabase.auth.signOut();
     },
   }), [loading, profile, profileError, refreshProfile, session]);
