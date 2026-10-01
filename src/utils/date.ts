@@ -44,3 +44,14 @@ export function formatLearningMinutes(seconds: number): string {
   if (seconds < 60) return '<1분';
   return `${Math.max(1, Math.round(seconds / 60))}분`;
 }
+
+export function formatDateTime(value: string | null): string {
+  if (!value) return '접속 기록 없음';
+  return new Date(value).toLocaleString('ko-KR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}

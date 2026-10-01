@@ -8,13 +8,18 @@ import { Screen } from '@/components/Screen';
 import { StateView } from '@/components/StateView';
 import { colors, radii, spacing } from '@/constants/theme';
 import { loadProfiles } from '@/services/admin';
-import { ACCOUNT_STATUS_LABELS, EMPLOYEE_LEVEL_LABELS, type AccountStatus, type EmployeeLevel, type ProfileWithBranches } from '@/types/auth';
+import { isSuperAdmin } from '@/lib/permissions';
+import { useAuth } from '@/providers/AuthProvider';
+import { formatDateTime } from '@/utils/date';
+import { ACCOUNT_STATUS_LABELS, EMPLOYEE_LEVEL_LABELS, type AccountStatus, type EmployeeLevel, type ProfileWithLastAccess } from '@/types/auth';
 
 type LevelFilter = EmployeeLevel | 'all';
 type StatusFilter = AccountStatus | 'all';
 
 export default function EmployeesScreen() {
-  const [profiles, setProfiles] = useState<ProfileWithBranches[]>([]);
+  const { profile: actor } = useAuth();
+  const canViewLastAccess = isSuperAdmin(actor);
+  const [profiles, setProfiles] = useState<ProfileWithLastAccess[]>([]);
   const [search, setSearch] = useState('');
   const [level, setLevel] = useState<LevelFilter>('all');
   const [branch, setBranch] = useState('all');
@@ -24,10 +29,10 @@ export default function EmployeesScreen() {
 
   const refresh = useCallback(async () => {
     setLoading(true);
-    try { setProfiles(await loadProfiles()); setError(null); }
+    try { setProfiles(await loadProfiles(canViewLastAccess)); setError(null); }
     catch { setError('직원 목록을 불러오지 못했습니다.'); }
     finally { setLoading(false); }
-  }, []);
+  }, [canViewLastAccess]);
   useFocusEffect(useCallback(() => { void refresh(); }, [refresh]));
 
   const filtered = useMemo(() => profiles.filter((profile) => {
@@ -81,6 +86,7 @@ export default function EmployeesScreen() {
             <Text style={styles.name}>{item.name}</Text>
             <Text style={styles.meta}>{item.branch?.name ?? '소속 지점 없음'} · {item.employee_level ? EMPLOYEE_LEVEL_LABELS[item.employee_level] : '레벨 미지정'}</Text>
             <Text style={styles.email}>{item.email}</Text>
+            {canViewLastAccess ? <Text style={styles.lastAccess}>최근 접속 · {formatDateTime(item.last_accessed_at)}</Text> : null}
           </View>
           <View style={[styles.status, item.status === 'active' ? styles.active : styles.inactive]}>
             <Text style={[styles.statusText, item.status === 'active' ? styles.activeText : styles.inactiveText]}>{ACCOUNT_STATUS_LABELS[item.status]}</Text>
@@ -99,6 +105,7 @@ const styles = StyleSheet.create({
   name: { color: colors.ink, fontSize: 16, fontWeight: '900' },
   meta: { color: colors.inkMuted, fontSize: 12 },
   email: { color: colors.inkMuted, fontSize: 11 },
+  lastAccess: { color: colors.brand, fontSize: 11, fontWeight: '800', marginTop: 2 },
   status: { borderRadius: radii.pill, paddingHorizontal: 9, paddingVertical: 5 },
   active: { backgroundColor: colors.successSoft },
   inactive: { backgroundColor: colors.dangerSoft },

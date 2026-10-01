@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Animated, Easing, Image, ImageBackground, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MenuCard } from '@/components/MenuCard';
@@ -8,6 +8,7 @@ import { colors, radii, spacing } from '@/constants/theme';
 import { useAuth } from '@/providers/AuthProvider';
 import { canAccessAdmin } from '@/lib/permissions';
 import { loadNotices, type NoticeWithRelations } from '@/services/notices';
+import { recordMainAccess } from '@/services/admin';
 
 export default function HomeScreen() {
   const [showIntro, setShowIntro] = useState(true);
@@ -15,6 +16,12 @@ export default function HomeScreen() {
   const [introOpacity] = useState(() => new Animated.Value(1));
   const [recentNotices, setRecentNotices] = useState<NoticeWithRelations[]>([]);
   const { profile } = useAuth();
+
+  useFocusEffect(useCallback(() => {
+    if (profile?.status === 'active') {
+      void recordMainAccess().catch(() => undefined);
+    }
+  }, [profile?.status]));
 
   useEffect(() => {
     if (!introImageLoaded) return undefined;

@@ -24,13 +24,15 @@ import { getCategories } from '@/data/quizRepository';
 import { assignableLevels, canManageEmployees, canResetEmployeePassword, isBranchManager, isDeveloper, isSuperAdmin } from '@/lib/permissions';
 import { toUserMessage } from '@/lib/errors';
 import { useAuth } from '@/providers/AuthProvider';
-import { EMPLOYEE_LEVEL_LABELS, type Branch, type EmployeeLevel, type ProfileWithBranches } from '@/types/auth';
+import { EMPLOYEE_LEVEL_LABELS, type Branch, type EmployeeLevel, type ProfileWithLastAccess } from '@/types/auth';
 import type { Tables } from '@/types/database';
+import { formatDateTime } from '@/utils/date';
 
 export default function EmployeeDetailScreen() {
   const { id = '' } = useLocalSearchParams<{ id: string }>();
   const { profile: actor } = useAuth();
-  const [employee, setEmployee] = useState<ProfileWithBranches | null>(null);
+  const canViewLastAccess = isSuperAdmin(actor);
+  const [employee, setEmployee] = useState<ProfileWithLastAccess | null>(null);
   const [attempts, setAttempts] = useState<Tables<'exam_attempts'>[]>([]);
   const [answers, setAnswers] = useState<Tables<'exam_answers'>[]>([]);
   const [study, setStudy] = useState<Tables<'study_progress'>[]>([]);
@@ -45,7 +47,7 @@ export default function EmployeeDetailScreen() {
     setLoading(true);
     try {
       const [profile, examData, answerData, studyData, branchData] = await Promise.all([
-        loadProfile(id), loadExamAttempts(id), loadExamAnswers(), loadStudyProgress(id), loadBranches(),
+        loadProfile(id, canViewLastAccess), loadExamAttempts(id), loadExamAnswers(), loadStudyProgress(id), loadBranches(),
       ]);
       setEmployee(profile);
       setAttempts(examData);
@@ -57,7 +59,7 @@ export default function EmployeeDetailScreen() {
     } catch {
       setError('직원 정보를 불러오지 못했습니다.');
     } finally { setLoading(false); }
-  }, [id]);
+  }, [canViewLastAccess, id]);
   useFocusEffect(useCallback(() => { void refresh(); }, [refresh]));
 
   const summary = useMemo(() => {
@@ -116,6 +118,7 @@ export default function EmployeeDetailScreen() {
         <Text style={styles.email}>{employee.email}</Text>
         <Text style={styles.email}>{employee.phone_number || '휴대폰 번호 미등록'}</Text>
         <Text style={styles.meta}>{employee.branch?.name ?? '소속 지점 없음'} · {employee.employee_level ? EMPLOYEE_LEVEL_LABELS[employee.employee_level] : '레벨 미지정'}</Text>
+        {canViewLastAccess ? <Text style={styles.lastAccess}>최근 접속 · {formatDateTime(employee.last_accessed_at)}</Text> : null}
         <Text style={[styles.status, employee.status === 'active' ? styles.active : styles.suspended]}>{employee.status === 'active' ? '정상 사용' : '이용 정지'}</Text>
       </View>
 
@@ -280,6 +283,7 @@ const styles = StyleSheet.create({
   name: { color: colors.white, fontSize: 26, fontWeight: '900' },
   email: { color: '#D8D4CF', fontSize: 13 },
   meta: { color: colors.white, fontSize: 14, fontWeight: '800', marginTop: spacing.xs },
+  lastAccess: { color: '#F3AAA4', fontSize: 12, fontWeight: '800', marginTop: spacing.xs },
   status: { alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 6, borderRadius: radii.pill, overflow: 'hidden', fontSize: 11, fontWeight: '900', marginTop: spacing.xs },
   active: { color: colors.success, backgroundColor: colors.successSoft },
   suspended: { color: colors.danger, backgroundColor: colors.dangerSoft },

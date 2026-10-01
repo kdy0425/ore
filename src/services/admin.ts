@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import type { AccountStatus, Branch, EmployeeLevel, ProfileWithBranches } from '@/types/auth';
+import type { AccountStatus, Branch, EmployeeLevel, ProfileWithBranches, ProfileWithLastAccess } from '@/types/auth';
 import type { Tables } from '@/types/database';
 
 const PROFILE_SELECT = `
@@ -8,16 +8,41 @@ const PROFILE_SELECT = `
   requested_branch:branches!profiles_requested_branch_id_fkey(id, name, is_active)
 `;
 
-export async function loadProfiles(): Promise<ProfileWithBranches[]> {
-  const { data, error } = await supabase.from('profiles').select(PROFILE_SELECT).order('created_at', { ascending: false });
+async function loadLastAccessByUser(): Promise<Map<string, string>> {
+  const { data, error } = await supabase.rpc('list_employee_last_access');
   if (error) throw error;
-  return (data as unknown as ProfileWithBranches[]) ?? [];
+  return new Map((data ?? []).map((item) => [item.user_id, item.last_accessed_at]));
 }
 
-export async function loadProfile(id: string): Promise<ProfileWithBranches> {
-  const { data, error } = await supabase.from('profiles').select(PROFILE_SELECT).eq('id', id).single();
+export async function loadProfiles(includeLastAccess = false): Promise<ProfileWithLastAccess[]> {
+  const profilesPromise = supabase.from('profiles').select(PROFILE_SELECT).order('created_at', { ascending: false });
+  const [profilesResult, lastAccessByUser] = await Promise.all([
+    profilesPromise,
+    includeLastAccess ? loadLastAccessByUser() : Promise.resolve(new Map<string, string>()),
+  ]);
+  const { data, error } = profilesResult;
   if (error) throw error;
-  return data as unknown as ProfileWithBranches;
+  return ((data as unknown as ProfileWithBranches[]) ?? []).map((profile) => ({
+    ...profile,
+    last_accessed_at: lastAccessByUser.get(profile.id) ?? null,
+  }));
+}
+
+export async function loadProfile(id: string, includeLastAccess = false): Promise<ProfileWithLastAccess> {
+  const profilePromise = supabase.from('profiles').select(PROFILE_SELECT).eq('id', id).single();
+  const [profileResult, lastAccessByUser] = await Promise.all([
+    profilePromise,
+    includeLastAccess ? loadLastAccessByUser() : Promise.resolve(new Map<string, string>()),
+  ]);
+  const { data, error } = profileResult;
+  if (error) throw error;
+  const profile = data as unknown as ProfileWithBranches;
+  return { ...profile, last_accessed_at: lastAccessByUser.get(profile.id) ?? null };
+}
+
+export async function recordMainAccess(): Promise<void> {
+  const { error } = await supabase.rpc('record_main_access');
+  if (error) throw error;
 }
 
 export async function approveUser(id: string, level?: EmployeeLevel): Promise<void> {

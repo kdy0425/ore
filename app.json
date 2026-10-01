@@ -3,12 +3,13 @@
     "name": "오레노라멘 학습 (직원용)",
     "slug": "oreno-learning",
     "scheme": "oreno-learning",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
       "bundleIdentifier": "com.orenoramen.learning",
+      "buildNumber": "2",
       "supportsTablet": false,
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
@@ -16,6 +17,7 @@
     },
     "android": {
       "package": "com.orenoramen.learning",
+      "versionCode": 2,
       "blockedPermissions": [
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO",

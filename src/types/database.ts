@@ -509,6 +509,17 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      list_employee_last_access: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          last_accessed_at: string
+          user_id: string
+        }[]
+      }
+      record_main_access: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       approve_user: {
         Args: {
           selected_level?: Database["public"]["Enums"]["employee_level"]

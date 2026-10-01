@@ -10,6 +10,10 @@ export interface ProfileWithBranches extends Profile {
   requested_branch: Pick<Branch, 'id' | 'name' | 'is_active'> | null;
 }
 
+export interface ProfileWithLastAccess extends ProfileWithBranches {
+  last_accessed_at: string | null;
+}
+
 export const EMPLOYEE_LEVEL_LABELS: Record<EmployeeLevel, string> = {
   branch_manager: '지점장',
   manager: '매니저',
